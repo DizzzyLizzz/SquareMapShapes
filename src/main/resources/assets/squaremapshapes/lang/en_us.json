@@ -1,0 +1,13 @@
+{
+  "itemGroup.squaremapshapes": "Example Mod Tab",
+  "block.squaremapshapes.example_block": "Example Block",
+  "item.squaremapshapes.example_item": "Example Item",
+
+  "squaremapshapes.configuration.title": "SquareMap Shapes Configs",
+  "squaremapshapes.configuration.section.squaremapshapes.common.toml": "SquareMap Shapes Configs",
+  "squaremapshapes.configuration.section.squaremapshapes.common.toml.title": "SquareMap Shapes Configs",
+  "squaremapshapes.configuration.items": "Item List",
+  "squaremapshapes.configuration.logDirtBlock": "Log Dirt Block",
+  "squaremapshapes.configuration.magicNumberIntroduction": "Magic Number Text",
+  "squaremapshapes.configuration.magicNumber": "Magic Number"
+}
