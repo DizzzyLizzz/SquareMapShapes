@@ -24,6 +24,7 @@ import xyz.jpenilla.squaremap.api.*;
 import xyz.jpenilla.squaremap.api.marker.Circle;
 import xyz.jpenilla.squaremap.api.marker.Ellipse;
 import xyz.jpenilla.squaremap.api.marker.Marker;
+import xyz.jpenilla.squaremap.api.marker.Rectangle;
 
 import javax.print.DocFlavor;
 
@@ -72,9 +73,19 @@ public class shapeCommands {
                                                             IntegerArgumentType.getInteger(commandSourceStack, "centerX"),
                                                             IntegerArgumentType.getInteger(commandSourceStack, "centerZ")
                                                             )
-
-
-                                                    )))))))
+                                                    )))))
+                                        .then(Commands.literal("Square")
+                                                .then(Commands.argument("corner1X", IntegerArgumentType.integer())
+                                                        .then(Commands.argument("corner1Z", IntegerArgumentType.integer())
+                                                                .then(Commands.argument("corner2X",IntegerArgumentType.integer())
+                                                                        .then(Commands.argument("corner2Z", IntegerArgumentType.integer())
+                                                                        .executes(commandSourceStack -> createSquareMarker(
+                                                                                StringArgumentType.getString(commandSourceStack,"markerID"),
+                                                                                IntegerArgumentType.getInteger(commandSourceStack, "corner1X"),
+                                                                                IntegerArgumentType.getInteger(commandSourceStack, "corner1Z"),
+                                                                                IntegerArgumentType.getInteger(commandSourceStack, "corner2X"),
+                                                                                IntegerArgumentType.getInteger(commandSourceStack,"corner2Z")
+                                                                        )))))))))
                         .then(Commands.literal("remove"))
 
                 );
@@ -89,7 +100,18 @@ public class shapeCommands {
 
         setMarker(key, CircleMark);
         return 0;
-    };
+    }
+
+    private static int createSquareMarker(String key, int p1X, int p1Z, int p2X, int p2Z){
+
+        Point corner1 = Point.of(p1X, p1Z);
+        Point corner2 = Point.of(p2X, p2Z);
+
+        Marker sqMark = Rectangle.rectangle(corner1, corner2);
+
+        setMarker(key, sqMark);
+        return 0;
+    }
 
     private static void setMarker(String key, Marker shape ){
         Squaremap SQmApi = SquaremapProvider.get();
