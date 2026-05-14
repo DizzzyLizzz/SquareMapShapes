@@ -1,7 +1,10 @@
 package com.dizzzylizzz.sms;
 
+import com.dizzzylizzz.sms.commands.shapeCommands;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 
@@ -36,7 +39,8 @@ public class SquareMapShapes {
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public SquareMapShapes(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
+
+
 
 
 
@@ -49,23 +53,19 @@ public class SquareMapShapes {
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
-
-    private void commonSetup(FMLCommonSetupEvent event) {
+@SubscribeEvent
+    private void onRegisterCommands(RegisterCommandsEvent event) {
         // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
+
+        shapeCommands.register(event.getDispatcher());
+
+        LOGGER.info("SMShapes registered");
 
 
 
 
     }
-    @SubscribeEvent
-    private void addReloadListeners(AddReloadListenerEvent event) {
 
-
-
-
-
-    }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
@@ -76,8 +76,8 @@ public class SquareMapShapes {
         @NonNull Ellipse circleMark = Ellipse.ellipse(shapeCenter, radius1.getAsInt(), radius1.getAsInt());
 
         Squaremap SQmApi = SquaremapProvider.get();
-
-        SimpleLayerProvider SQmprovider = SimpleLayerProvider.builder("ShapesMarkerLayer")
+        Shapes.circleMarker marker2 = new Shapes.circleMarker();
+        SimpleLayerProvider SQmprovider = SimpleLayerProvider.builder("SMShapes")
                 .showControls(true)
                 .defaultHidden(false)
                 .layerPriority(1)
