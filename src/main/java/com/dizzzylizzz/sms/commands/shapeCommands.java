@@ -74,12 +74,12 @@ public class shapeCommands {
                                                             IntegerArgumentType.getInteger(commandSourceStack, "centerZ")
                                                             )
                                                     )))))
-                                        .then(Commands.literal("Square")
+                                        .then(Commands.literal("Rectangle")
                                                 .then(Commands.argument("corner1X", IntegerArgumentType.integer())
                                                         .then(Commands.argument("corner1Z", IntegerArgumentType.integer())
                                                                 .then(Commands.argument("corner2X",IntegerArgumentType.integer())
                                                                         .then(Commands.argument("corner2Z", IntegerArgumentType.integer())
-                                                                        .executes(commandSourceStack -> createSquareMarker(
+                                                                        .executes(commandSourceStack -> createRectangleMarker(
                                                                                 StringArgumentType.getString(commandSourceStack,"markerID"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner1X"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner1Z"),
@@ -102,7 +102,7 @@ public class shapeCommands {
         return 0;
     }
 
-    private static int createSquareMarker(String key, int p1X, int p1Z, int p2X, int p2Z){
+    private static int createRectangleMarker(String key, int p1X, int p1Z, int p2X, int p2Z){
 
         Point corner1 = Point.of(p1X, p1Z);
         Point corner2 = Point.of(p2X, p2Z);
