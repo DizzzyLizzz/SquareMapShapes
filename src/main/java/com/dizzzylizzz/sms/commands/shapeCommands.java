@@ -35,16 +35,10 @@ public class shapeCommands {
         // Register the commonSetup method for modloading
         EventBus.addListener(this::onRegisterCommands);
 
-
-
-
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (SquareMapShapes) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
-
-
-
     }
 
     public void onRegisterCommands(RegisterCommandsEvent event){
@@ -53,7 +47,7 @@ public class shapeCommands {
 
     }
 
-    static SimpleLayerProvider SQmprovider = SimpleLayerProvider.builder("ShapesMarkerLayer")
+    static SimpleLayerProvider SQmprovider = SimpleLayerProvider.builder("SMShapesMod")
             .showControls(true)
             .defaultHidden(false)
             .layerPriority(1)
@@ -65,33 +59,36 @@ public class shapeCommands {
 
         commandDispatcher.register(Commands.literal("SMShapes")
                         .requires(commandSourceStack -> commandSourceStack.hasPermission(4))
-                .then(Commands.argument("markerID", StringArgumentType.string())
-                        .then(Commands.literal("create")
-                                .then(Commands.literal("Circle")
-                                    .then(Commands.argument("centerX", IntegerArgumentType.integer())
-                                        .then(Commands.argument("centerZ", IntegerArgumentType.integer())
-                                            .then(Commands.argument("radius",IntegerArgumentType.integer()))
-                                                    .executes(context -> {
 
-                                                        Circle marker = createCircleMarker(
-                                                                IntegerArgumentType.getInteger(context, "radius"),
-                                                                IntegerArgumentType.getInteger(context,"centerX"),
-                                                                IntegerArgumentType.getInteger(context,"centerZ")
-                                                        );
-                                                        setMarker(StringArgumentType.getString(context, "markerID"),marker);
-                                                        return 1;
-                                            }))))))
+                        .then(Commands.literal("create")
+                                .then(Commands.argument("markerID", StringArgumentType.string())
+                                    .then(Commands.literal("Circle")
+                                        .then(Commands.argument("centerX", IntegerArgumentType.integer())
+                                            .then(Commands.argument("centerZ", IntegerArgumentType.integer())
+                                                .then(Commands.argument("radius",IntegerArgumentType.integer())
+                                                    .executes(commandSourceStack -> createCircleMarker(
+                                                            StringArgumentType.getString(commandSourceStack,"markerID"),
+                                                            IntegerArgumentType.getInteger(commandSourceStack, "radius"),
+                                                            IntegerArgumentType.getInteger(commandSourceStack, "centerX"),
+                                                            IntegerArgumentType.getInteger(commandSourceStack, "centerZ")
+                                                            )
+
+
+                                                    )))))))
                         .then(Commands.literal("remove"))
 
                 );
 
     }
 
-    private static Circle createCircleMarker(int radius, int centerX, int centerZ){
+    private static int createCircleMarker(String key, int radius, int centerX, int centerZ){
 
         Point shapeCenter = Point.of(centerX, centerZ);
 
-        return Circle.circle(shapeCenter, radius);
+        Marker CircleMark = Circle.circle(shapeCenter, radius);
+
+        setMarker(key, CircleMark);
+        return 0;
     };
 
     private static void setMarker(String key, Marker shape ){
