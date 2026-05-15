@@ -14,6 +14,7 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -60,7 +61,6 @@ public class shapeCommands {
 
         commandDispatcher.register(Commands.literal("SMShapes")
                         .requires(commandSourceStack -> commandSourceStack.hasPermission(4))
-
                         .then(Commands.literal("create")
                                 .then(Commands.argument("markerID", StringArgumentType.string())
                                     .then(Commands.literal("Circle")
@@ -74,19 +74,21 @@ public class shapeCommands {
                                                             IntegerArgumentType.getInteger(commandSourceStack, "centerZ")
                                                             )
                                                     )))))
-                                        .then(Commands.literal("Rectangle")
+                                        .then(Commands.literal("Square")
                                                 .then(Commands.argument("corner1X", IntegerArgumentType.integer())
                                                         .then(Commands.argument("corner1Z", IntegerArgumentType.integer())
                                                                 .then(Commands.argument("corner2X",IntegerArgumentType.integer())
                                                                         .then(Commands.argument("corner2Z", IntegerArgumentType.integer())
-                                                                        .executes(commandSourceStack -> createRectangleMarker(
+                                                                        .executes(commandSourceStack -> createSquareMarker(
                                                                                 StringArgumentType.getString(commandSourceStack,"markerID"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner1X"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner1Z"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner2X"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack,"corner2Z")
                                                                         )))))))))
-                        .then(Commands.literal("remove"))
+                        .then(Commands.literal("remove")
+                                .then(Commands.argument("markerID", StringArgumentType.string())
+                                        .executes(commandSourceStack -> removeMarker(StringArgumentType.getString(commandSourceStack, "markerID")))))
 
                 );
 
@@ -102,7 +104,7 @@ public class shapeCommands {
         return 0;
     }
 
-    private static int createRectangleMarker(String key, int p1X, int p1Z, int p2X, int p2Z){
+    private static int createSquareMarker(String key, int p1X, int p1Z, int p2X, int p2Z){
 
         Point corner1 = Point.of(p1X, p1Z);
         Point corner2 = Point.of(p2X, p2Z);
@@ -124,9 +126,9 @@ public class shapeCommands {
         });
     }
 
-   private static void circle() {
-
-
-
+   private static int removeMarker(String markerID) {
+        Key markerIDkey = Key.of(markerID);
+        SQmprovider.removeMarker(markerIDkey);
+        return 0;
     }
 }
