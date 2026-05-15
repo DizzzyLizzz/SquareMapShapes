@@ -14,6 +14,7 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -60,7 +61,6 @@ public class shapeCommands {
 
         commandDispatcher.register(Commands.literal("SMShapes")
                         .requires(commandSourceStack -> commandSourceStack.hasPermission(4))
-
                         .then(Commands.literal("create")
                                 .then(Commands.argument("markerID", StringArgumentType.string())
                                     .then(Commands.literal("Circle")
@@ -86,7 +86,9 @@ public class shapeCommands {
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner2X"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack,"corner2Z")
                                                                         )))))))))
-                        .then(Commands.literal("remove"))
+                        .then(Commands.literal("remove")
+                                .then(Commands.argument("markerID", StringArgumentType.string())
+                                        .executes(commandSourceStack -> removeMarker(StringArgumentType.getString(commandSourceStack, "markerID")))))
 
                 );
 
@@ -124,9 +126,9 @@ public class shapeCommands {
         });
     }
 
-   private static void circle() {
-
-
-
+   private static int removeMarker(String markerID) {
+        Key markerIDkey = Key.of(markerID);
+        SQmprovider.removeMarker(markerIDkey);
+        return 0;
     }
 }
