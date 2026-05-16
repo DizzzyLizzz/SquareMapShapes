@@ -1,35 +1,32 @@
 package com.dizzzylizzz.sms.commands;
 
 
-import com.dizzzylizzz.sms.Config;
-import com.dizzzylizzz.sms.Shapes;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.minecraft.commands.CommandSource;
+
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.client.GuiMessage;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import xyz.jpenilla.squaremap.api.*;
 import xyz.jpenilla.squaremap.api.marker.Circle;
-import xyz.jpenilla.squaremap.api.marker.Ellipse;
 import xyz.jpenilla.squaremap.api.marker.Marker;
 import xyz.jpenilla.squaremap.api.marker.Rectangle;
 
-import javax.print.DocFlavor;
 
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import java.util.function.Supplier;
+
+import static com.dizzzylizzz.sms.layerProvider.markerLayer;
 
 public class shapeCommands {
 
@@ -49,7 +46,7 @@ public class shapeCommands {
 
     }
 
-    static SimpleLayerProvider SQmprovider = SimpleLayerProvider.builder("SMShapesMod")
+    static final SimpleLayerProvider SMSProvider = SimpleLayerProvider.builder("SMShapesMod")
             .showControls(true)
             .defaultHidden(false)
             .layerPriority(1)
@@ -74,21 +71,25 @@ public class shapeCommands {
                                                             IntegerArgumentType.getInteger(commandSourceStack, "centerZ")
                                                             )
                                                     )))))
-                                        .then(Commands.literal("Square")
+                                        .then(Commands.literal("Rectangle")
                                                 .then(Commands.argument("corner1X", IntegerArgumentType.integer())
                                                         .then(Commands.argument("corner1Z", IntegerArgumentType.integer())
                                                                 .then(Commands.argument("corner2X",IntegerArgumentType.integer())
                                                                         .then(Commands.argument("corner2Z", IntegerArgumentType.integer())
-                                                                        .executes(commandSourceStack -> createSquareMarker(
+                                                                        .executes(commandSourceStack -> createRectangleMarker(
                                                                                 StringArgumentType.getString(commandSourceStack,"markerID"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner1X"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner1Z"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack, "corner2X"),
                                                                                 IntegerArgumentType.getInteger(commandSourceStack,"corner2Z")
                                                                         )))))))))
+                        .then(Commands.literal("List")
+                                .executes(commandSourceStack -> listMarkers(commandSourceStack.getSource())))
+
                         .then(Commands.literal("remove")
                                 .then(Commands.argument("markerID", StringArgumentType.string())
-                                        .executes(commandSourceStack -> removeMarker(StringArgumentType.getString(commandSourceStack, "markerID")))))
+                                        .executes(commandSourceStack -> removeMarker(
+                                                StringArgumentType.getString(commandSourceStack, "markerID")))))
 
                 );
 
@@ -104,7 +105,7 @@ public class shapeCommands {
         return 0;
     }
 
-    private static int createSquareMarker(String key, int p1X, int p1Z, int p2X, int p2Z){
+    private static int createRectangleMarker(String key, int p1X, int p1Z, int p2X, int p2Z){
 
         Point corner1 = Point.of(p1X, p1Z);
         Point corner2 = Point.of(p2X, p2Z);
@@ -118,17 +119,25 @@ public class shapeCommands {
     private static void setMarker(String key, Marker shape ){
         Squaremap SQmApi = SquaremapProvider.get();
         Key markerKey = Key.of(key);
-
         SQmApi.getWorldIfEnabled(WorldIdentifier.parse("minecraft:overworld")).ifPresent(mapWorld -> {
-            SQmprovider.addMarker(markerKey, shape);
-            mapWorld.layerRegistry().register(markerKey, SQmprovider);
+            SMSProvider.addMarker(markerKey, shape);
+            mapWorld.layerRegistry().register(markerKey, SMSProvider);
 
         });
     }
 
    private static int removeMarker(String markerID) {
         Key markerIDkey = Key.of(markerID);
-        SQmprovider.removeMarker(markerIDkey);
+        SMSProvider.removeMarker(markerIDkey);
         return 0;
     }
+
+    private static int listMarkers(CommandSourceStack context) throws CommandSyntaxException {
+
+        String Markerlist = SMSProvider.registeredMarkers().toString();
+       context.sendSuccess(()-> Component.literal("The List of SMS markers are: " + Markerlist), true);
+        return 0;
+    }
+    //static Component listMessage = Component.literal("The List of markers are: " + SMSProvider.registeredMarkers());
+
 }

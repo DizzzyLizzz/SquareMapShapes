@@ -72,25 +72,25 @@ public class SquareMapShapes {
     public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts
 
-        Point shapeCenter = Point.of(shape1Center.get().indexOf(0),shape1Center.get().indexOf(1));
-        @NonNull Ellipse circleMark = Ellipse.ellipse(shapeCenter, radius1.getAsInt(), radius1.getAsInt());
-
-        Squaremap SQmApi = SquaremapProvider.get();
-        Shapes.circleMarker marker2 = new Shapes.circleMarker();
-        SimpleLayerProvider SQmprovider = SimpleLayerProvider.builder("SMShapes")
-                .showControls(true)
-                .defaultHidden(false)
-                .layerPriority(1)
-                .zIndex(250)
-                .build();
-
-        SQmApi.getWorldIfEnabled(WorldIdentifier.parse("minecraft:overworld")).ifPresent(mapWorld -> {
-
-            Key keye = Key.of("ShapesMarkerLayerKey");
-            SQmprovider.addMarker(keye, circleMark);
-            mapWorld.layerRegistry().register(keye, SQmprovider);
-
-        });
+//        Point shapeCenter = Point.of(shape1Center.get().indexOf(0),shape1Center.get().indexOf(1));
+//        @NonNull Ellipse circleMark = Ellipse.ellipse(shapeCenter, radius1.getAsInt(), radius1.getAsInt());
+//
+//        Squaremap SQmApi = SquaremapProvider.get();
+//        Shapes.circleMarker marker2 = new Shapes.circleMarker();
+//        SimpleLayerProvider SQmprovider = SimpleLayerProvider.builder("SMShapes")
+//                .showControls(true)
+//                .defaultHidden(false)
+//                .layerPriority(1)
+//                .zIndex(250)
+//                .build();
+//
+//        SQmApi.getWorldIfEnabled(WorldIdentifier.parse("minecraft:overworld")).ifPresent(mapWorld -> {
+//
+//            Key keye = Key.of("ShapesMarkerLayerKey");
+//            SQmprovider.addMarker(keye, circleMark);
+//            mapWorld.layerRegistry().register(keye, SQmprovider);
+//
+//        });
 
 
 
